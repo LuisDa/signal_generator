@@ -54,7 +54,14 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  setGeometry(400, 250, 700, 720);
+
+  //Selector de tipo de señal
+  ui->selectorTipoSennal->addItem("Sinusoidal");
+  ui->selectorTipoSennal->addItem("Triangular");
+  ui->selectorTipoSennal->addItem("Cuadrada");
+  ui->selectorTipoSennal->addItem("Diente de sierra");
+
+  setGeometry(300, 150, 1100, 900);
   currentAmplitude = 1;
   currentFrequency = 1000;
 
@@ -117,7 +124,7 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
   QVector<double> x(10000), y0(10000), y1(10000);
   for (int i=0; i<10000; ++i)
   {
-    x[i] = i;
+    x[i] = 1.0*i/FREC_MUESTREO;
     //y0[i] = qExp(-i/150.0)*qCos(i/10.0); // exponentially decaying cosine
     //y0[i] = currentAmplitude*qCos(i/10.0);
     y0[i] = currentAmplitude*qCos(2*M_PI*currentFrequency*i/FREC_MUESTREO);
@@ -135,7 +142,6 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
 
   connect(ui->butApplyAmp, SIGNAL (pressed()), this, SLOT (onBotonAmplitud()));
   connect(ui->butApplyFreq, SIGNAL (pressed()), this, SLOT (onBotonFrecuencia()));
-  //connect(ui->pushButton_2, SIGNAL (pressed()), this, SLOT (accionBotonProgramar()));
 
   // pass data points to graphs:
   customPlot->graph(0)->setData(x, y0);
