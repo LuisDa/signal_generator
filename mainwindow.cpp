@@ -86,6 +86,9 @@ void MainWindow::setupDemo(int demoIndex)
   statusBar()->clearMessage();
   currentDemoIndex = demoIndex;
   ui->customPlot->replot();
+
+  setupSimpleDemo(ui->customPlot2);
+  ui->customPlot2->replot();
 }
 
 void MainWindow::setupQuadraticDemo(QCustomPlot *customPlot)
