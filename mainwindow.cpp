@@ -57,8 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   //Selector de tipo de señal
   ui->selectorTipoSennal->addItem("Sinusoidal");
-  ui->selectorTipoSennal->addItem("Triangular");
   ui->selectorTipoSennal->addItem("Cuadrada");
+  ui->selectorTipoSennal->addItem("Triangular");
   ui->selectorTipoSennal->addItem("Diente de sierra");
 
   setGeometry(300, 150, 1100, 900);
@@ -131,6 +131,14 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
     //y0[i] = qExp(-i/150.0)*qCos(i/10.0); // exponentially decaying cosine
     //y0[i] = currentAmplitude*qCos(i/10.0);
     y0[i] = currentAmplitude*qCos(2*M_PI*currentFrequency*i/FREC_MUESTREO);
+
+    //Onda cuadrada
+    if (tipoSennalActiva == CUADRADA)
+    {
+        if (y0[i] > 0) y0[i] = currentAmplitude;
+        else if (y0[i] == 0) y0[i] = 0;
+        else y0[i] = -currentAmplitude;
+    }
     //y1[i] = qExp(-i/150.0);              // exponential envelope
   }
   // configure right and top axis to show ticks but no labels:
@@ -145,6 +153,7 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
 
   connect(ui->butApplyAmp, SIGNAL (pressed()), this, SLOT (onBotonAmplitud()));
   connect(ui->butApplyFreq, SIGNAL (pressed()), this, SLOT (onBotonFrecuencia()));
+  connect(ui->selectorTipoSennal, SIGNAL (currentIndexChanged(const QString&)), this, SLOT(onChangeSignalType(const QString&)));
 
   // pass data points to graphs:
   customPlot->graph(0)->setData(x, y0);
@@ -296,7 +305,7 @@ void MainWindow::onBotonAmplitud()
 {
     QString text = ui->textEditAmp->toPlainText();
     currentAmplitude = text.toFloat();
-    setupDemo(1);
+    setupDemo(1); //OJO, llamar a esta función en un SLOT puede ser lo que deje la aplicación totalmente tostada
 }
 
 
@@ -304,11 +313,19 @@ void MainWindow::onBotonFrecuencia()
 {
     QString text = ui->textEditFreq->toPlainText();
     currentFrequency = text.toFloat();
-    setupDemo(1);
+    setupDemo(1); //OJO, llamar a esta función en un SLOT puede ser lo que deje la aplicación totalmente tostada
 }
 
 
+void MainWindow::onChangeSignalType(const QString& selection_text)
+{
+    if (ui->selectorTipoSennal->currentIndex() == 0) tipoSennalActiva = SINUSOIDE;
+    else if (ui->selectorTipoSennal->currentIndex() == 1) tipoSennalActiva = CUADRADA;
+    else if (ui->selectorTipoSennal->currentIndex() == 2) tipoSennalActiva = TRIANGULAR;
+    else if (ui->selectorTipoSennal->currentIndex() == 3) tipoSennalActiva = DIENTE_SIERRA;
 
+    setupDemo(1); //OJO, llamar a esta función en un SLOT puede ser lo que deje la aplicación totalmente tostada. Estudiar la posibilidad de NO hacerlo aquí
+}
 
 
 

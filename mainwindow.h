@@ -57,6 +57,8 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
   
+  enum signalType {SINUSOIDE=0, CUADRADA=1, TRIANGULAR=2, DIENTE_SIERRA=3};
+
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
@@ -94,6 +96,8 @@ private slots:
 
   void onBotonAmplitud();
   void onBotonFrecuencia();
+
+  void onChangeSignalType(const QString& selection_text);
   
 private:
   Ui::MainWindow *ui;
@@ -101,6 +105,7 @@ private:
   QTimer dataTimer;
   QCPItemTracer *itemDemoPhaseTracer;
   int currentDemoIndex;
+  int tipoSennalActiva = SINUSOIDE;
   float currentAmplitude;
   float currentFrequency;
 };
