@@ -46,6 +46,7 @@
 #include <QScreen>
 #include <QMessageBox>
 #include <QMetaEnum>
+#include "plot_thread.h"
 
 #define FREC_MUESTREO 10000000 //1 MHz
 
@@ -53,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
 {
+    PlotThread *plotThread = new PlotThread();
+    plotThread->start();
+
   ui->setupUi(this);
 
   //Selector de tipo de señal
@@ -64,24 +68,13 @@ MainWindow::MainWindow(QWidget *parent) :
   setGeometry(300, 150, 1100, 900);
   currentAmplitude = 1;
   currentFrequency = 1000;
-
   
   setupDemo(1);
-
-  
-  // for making screenshots of the current demo or all demos (for website screenshots):
-  //QTimer::singleShot(1500, this, SLOT(allScreenShots()));
-  //QTimer::singleShot(4000, this, SLOT(screenShot()));  
 }
 
 void MainWindow::setupDemo(int demoIndex)
 {
-  switch (demoIndex)
-  {
-    case 0:  setupQuadraticDemo(ui->customPlot); break;
-    case 1:  setupSimpleDemo(ui->customPlot); break;
-
-  }
+  setupSimpleDemo(ui->customPlot);
   setWindowTitle("QCustomPlot: "+demoName);
   statusBar()->clearMessage();
   currentDemoIndex = demoIndex;
@@ -91,26 +84,6 @@ void MainWindow::setupDemo(int demoIndex)
   ui->customPlot2->replot();
 }
 
-void MainWindow::setupQuadraticDemo(QCustomPlot *customPlot)
-{
-  demoName = "Quadratic Demo";
-  // generate some data:
-  QVector<double> x(101), y(101); // initialize with entries 0..100
-  for (int i=0; i<101; ++i)
-  {
-    x[i] = i/50.0 - 1; // x goes from -1 to 1
-    y[i] = x[i]*x[i];  // let's plot a quadratic function
-  }
-  // create graph and assign data to it:
-  customPlot->addGraph();
-  customPlot->graph(0)->setData(x, y);
-  // give the axes some labels:
-  customPlot->xAxis->setLabel("x");
-  customPlot->yAxis->setLabel("y");
-  // set axes ranges, so we see all data:
-  customPlot->xAxis->setRange(-1, 1);
-  customPlot->yAxis->setRange(0, 1);
-}
 
 void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
 {
@@ -128,8 +101,6 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
   for (int i=0; i<10000; ++i)
   {
     x[i] = 1.0*i/FREC_MUESTREO;
-    //y0[i] = qExp(-i/150.0)*qCos(i/10.0); // exponentially decaying cosine
-    //y0[i] = currentAmplitude*qCos(i/10.0);
     y0[i] = currentAmplitude*qCos(2*M_PI*currentFrequency*i/FREC_MUESTREO);
 
     //Onda cuadrada
@@ -138,11 +109,9 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
         if (y0[i] > 0) y0[i] = currentAmplitude;
         else if (y0[i] == 0) y0[i] = 0;
         else y0[i] = -currentAmplitude;
-    }
-    //y1[i] = qExp(-i/150.0);              // exponential envelope
+    }    
   }
-  // configure right and top axis to show ticks but no labels:
-  // (see QCPAxisRect::setupFullAxesBox for a quicker method to do this)
+
   customPlot->xAxis2->setVisible(true);
   customPlot->xAxis2->setTickLabels(false);
   customPlot->yAxis2->setVisible(true);

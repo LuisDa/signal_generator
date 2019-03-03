@@ -15,6 +15,7 @@ SOURCES += main.cpp\
            qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
-            qcustomplot.h
+            qcustomplot.h \
+    plot_thread.h
 
 FORMS    += mainwindow.ui
