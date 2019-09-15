@@ -46,7 +46,7 @@
 #include <QScreen>
 #include <QMessageBox>
 #include <QMetaEnum>
-#include "plot_thread.h"
+//#include "plot_thread.h"
 
 #define FREC_MUESTREO 10000000 //1 MHz
 
@@ -54,8 +54,10 @@ MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
 {
-    PlotThread *plotThread = new PlotThread();
-    plotThread->start();
+    //PlotThread *plotThread = new PlotThread();
+    m_pPlotThread = new PlotThread();
+    m_pPlotThread->setUI(ui);
+    m_pPlotThread->start();
 
   ui->setupUi(this);
 
@@ -74,14 +76,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::setupDemo(int demoIndex)
 {
+
   setupSimpleDemo(ui->customPlot);
   setWindowTitle("QCustomPlot: "+demoName);
   statusBar()->clearMessage();
   currentDemoIndex = demoIndex;
+
   ui->customPlot->replot();
 
   setupSimpleDemo(ui->customPlot2);
+
   ui->customPlot2->replot();
+
+  //m_pPlotThread->setUpdate(true);
 }
 
 
@@ -97,8 +104,9 @@ void MainWindow::setupSimpleDemo(QCustomPlot *customPlot)
   customPlot->addGraph();
   customPlot->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
   // generate some points of data (y0 for first, y1 for second graph):
-  QVector<double> x(10000), y0(10000), y1(10000);
-  for (int i=0; i<10000; ++i)
+  //QVector<double> x(10000), y0(10000), y1(10000);
+  QVector<double> x(2000), y0(2000), y1(2000);
+  for (int i=0; i<2000; ++i)
   {
     x[i] = 1.0*i/FREC_MUESTREO;
     y0[i] = currentAmplitude*qCos(2*M_PI*currentFrequency*i/FREC_MUESTREO);

@@ -12,21 +12,32 @@ class PlotThread : public QThread
 {
     Q_OBJECT
 
+public:
+    void setUpdate(bool set) { m_update = set;}
+    void setUI(Ui::MainWindow *ui) {m_pUI = ui;}
 private:
     bool m_update;
+    Ui::MainWindow *m_pUI;
 
     void run() override
     {
         while (true)
         {
             std::cout << " Es el vecino el que elige al alcalde... \n";
-            msleep(1000);
+            if (m_update)
+            {
+                m_pUI->customPlot->replot();
+                m_pUI->customPlot2->replot();
+                m_update = false;
+            }
+
+            msleep(100);
         }
 
 
     }
 
-    void setUpdate(bool set) { m_update = set;}
+    //void setUpdate(bool set) { m_update = set;}
 signals:
     void resultReady(const QString &s);
 };

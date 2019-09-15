@@ -48,6 +48,7 @@
 //#undef QT_STATIC_BUILD
 //#define QCUSTOMPLOT_USE_LIBRARY
 #include "qcustomplot.h" // the header file of QCustomPlot. Don't forget to add it to your project, if you use an IDE, so it gets compiled.
+#include "plot_thread.h"
 
 namespace Ui {
 class MainWindow;
@@ -87,6 +88,8 @@ private:
   int tipoSennalActiva = SINUSOIDE;
   float currentAmplitude;
   float currentFrequency;
+
+  PlotThread *m_pPlotThread = NULL;
 };
 
 #endif // MAINWINDOW_H
